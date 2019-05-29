@@ -1,8 +1,10 @@
 language: java
 
+script: gradle build
+
 deploy:
   provider: releases
-  api_Key: "${GH_TOKEN}"
+  api_key: "${GH_TOKEN}"
   file: "build/libs/*.jar"
   skip_cleanup: true
   on:
