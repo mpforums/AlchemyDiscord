@@ -1,5 +1,8 @@
 *
 !/.gitignore
+!/README.md
+!/images/
+!/images/**
 !/src/
 !/src/**
 !/*.gradle
