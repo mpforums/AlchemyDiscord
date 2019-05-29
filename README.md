@@ -4,7 +4,6 @@
 ![](https://img.shields.io/badge/Minecraft%20Version-1.14-blue.svg?style=for-the-badge)
 [![](https://img.shields.io/badge/SUPPORT-DISCORD-important.svg?style=for-the-badge)](https://discord.gg/26223RR)
 
-<!-- https://img.shields.io/badge/SUPPORT-DISCORD-important.svg?style=for-the-badge -->
 
 **BungeeDiscord** is a Bungee (+Waterfall) plugin that acts as a bridge between any connected Bungee server and a Discord channel.  Features include -
 - Extremely simple setup

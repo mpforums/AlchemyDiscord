@@ -10,7 +10,6 @@ import discord4j.core.object.util.Snowflake;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
@@ -27,9 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public class BungeeDiscord extends Plugin implements Listener {
     private String token = "";
@@ -96,37 +96,39 @@ public class BungeeDiscord extends Plugin implements Listener {
         return configuration;
     }
 
-    Map<ProxiedPlayer, Server> players = new HashMap<>();
+    Set<UUID> players = new HashSet<>();
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
-        players.remove(player);
+        UUID uuid = player.getUniqueId();
         String playerName = player.getDisplayName();
+        String stringUuid = uuid.toString().replace("-", "");
 
-        String uuid = player.getUniqueId().toString().replace("-", "");
+        players.remove(uuid);
 
         String msg = "Left the network";
 
-        sendWebhookMeta(playerName, uuid, msg);
+        sendWebhookMeta(playerName, stringUuid, msg);
     }
 
     @EventHandler
     public void onSwitch(ServerSwitchEvent event) {
         ProxiedPlayer player = event.getPlayer();
-        String uuid = player.getUniqueId().toString().replace("-", "");
+        UUID uuid = player.getUniqueId();
+        String stringUuid = uuid.toString().replace("-", "");
         String playerName = player.getDisplayName();
         String serverName = player.getServer().getInfo().getName();
 
         String msg;
-        if (players.containsKey(player))
+        if (players.contains(uuid))
             msg = String.format("Switched to %s", serverName);
         else {
-            players.put(player, player.getServer());
+            players.add(uuid);
             msg = String.format("Joined %s", player.getServer().getInfo().getName());
         }
 
-        sendWebhookMeta(playerName, uuid, msg);
+        sendWebhookMeta(playerName, stringUuid, msg);
     }
 
     @EventHandler
