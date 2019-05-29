@@ -1,4 +1,4 @@
-main: BungeeDiscord.BungeeDiscord
+main: pw.alchemy.BungeeDiscord.BungeeDiscord
 name: BungeeDiscord
 version: @VERSION@
 api-version: 1.14

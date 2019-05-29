@@ -27,7 +27,7 @@ webhook: "someWebhook"
 - Start the server
 
 ## Reloading
-Note that the plugin **very much does not support server reloading**.  It's not recommended practice to recommend in any situation, though if reloaded, this plugin will definitely break.
+Note that the plugin **very much does not support server reloading**.  It's not recommended practice to reload in any situation, though if reloaded, this plugin will definitely break.
 
 ## Screenshots
 ![](images/discord.png)

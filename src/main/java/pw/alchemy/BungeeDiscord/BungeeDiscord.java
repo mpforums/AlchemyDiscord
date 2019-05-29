@@ -1,4 +1,4 @@
-package BungeeDiscord;
+package pw.alchemy.BungeeDiscord;
 
 import com.mashape.unirest.http.Unirest;
 import discord4j.core.DiscordClient;
@@ -10,6 +10,7 @@ import discord4j.core.object.util.Snowflake;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
@@ -76,7 +77,6 @@ public class BungeeDiscord extends Plugin implements Listener {
 
             File file = new File(getDataFolder(), "config.yml");
 
-
             if (!file.exists()) {
                 try (InputStream in = getResourceAsStream("config.yml")) {
                     Files.copy(in, file.toPath());
@@ -86,7 +86,8 @@ public class BungeeDiscord extends Plugin implements Listener {
                 }
             }
 
-            configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
+            configuration = ConfigurationProvider.getProvider(YamlConfiguration.class)
+                    .load(new File(getDataFolder(), "config.yml"));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -95,14 +96,13 @@ public class BungeeDiscord extends Plugin implements Listener {
         return configuration;
     }
 
-
-    Map<String, ConnectedPlayer> players = new HashMap<>();
+    Map<ProxiedPlayer, Server> players = new HashMap<>();
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
+        players.remove(player);
         String playerName = player.getDisplayName();
-        players.remove(playerName);
 
         String uuid = player.getUniqueId().toString().replace("-", "");
 
@@ -119,50 +119,39 @@ public class BungeeDiscord extends Plugin implements Listener {
         String serverName = player.getServer().getInfo().getName();
 
         String msg;
-        if (players.containsKey(playerName))
+        if (players.containsKey(player))
             msg = String.format("Switched to %s", serverName);
         else {
-            ConnectedPlayer connectedPlayer = new ConnectedPlayer();
-            players.put(playerName, connectedPlayer);
-
-            connectedPlayer.uuid = uuid;
+            players.put(player, player.getServer());
             msg = String.format("Joined %s", player.getServer().getInfo().getName());
         }
-        players.get(playerName).serverName = serverName;
 
         sendWebhookMeta(playerName, uuid, msg);
     }
 
     @EventHandler
     public void onChat(ChatEvent event) {
-        if (event.isCommand()) return;
+        if (event.isCommand())
+            return;
         String username = event.getSender().toString();
-        ConnectedPlayer connectedPlayer = players.get(username);
-        String uuid = connectedPlayer.uuid;
-        String serverName = connectedPlayer.serverName;
+        ProxiedPlayer player = getProxy().getPlayer(username);
+        String uuid = player.getUniqueId().toString();
+        String serverName = player.getServer().getInfo().getName();
         String message = event.getMessage();
 
         sendWebhookMessge(String.format("%s (%s)", username, serverName), uuid, message);
     }
 
     private void sendWebhookRaw(String body) {
-        Unirest
-                .post(webhook)
-                .header("Content-Type", "application/json")
-                .body(body)
-                .asJsonAsync();
+        Unirest.post(webhook).header("Content-Type", "application/json").body(body).asJsonAsync();
     }
 
     private void sendWebhookMeta(String username, String uuid, String msg) {
         String avatar = String.format("https://crafatar.com/renders/head/%s", uuid);
 
-        String body = new JSONObject()
-                .put("username", username)
-                .put("avatar_url", avatar)
-                .put("embeds", new JSONArray()
-                        .put(new JSONObject()
-                                .put("title", msg)
-                                .put("color", "4491614"))).toString();
+        String body = new JSONObject().put("username", username).put("avatar_url", avatar)
+                .put("embeds", new JSONArray().put(new JSONObject().put("title", msg).put("color", "4491614")))
+                .toString();
         sendWebhookRaw(body);
     }
 
@@ -170,10 +159,8 @@ public class BungeeDiscord extends Plugin implements Listener {
         String avatar = String.format("https://crafatar.com/renders/head/%s", uuid);
         message = message.replace("@", "@\u200B");
 
-        String body = new JSONObject()
-                .put("username", username)
-                .put("avatar_url", avatar)
-                .put("content", message).toString();
+        String body = new JSONObject().put("username", username).put("avatar_url", avatar).put("content", message)
+                .toString();
         sendWebhookRaw(body);
     }
 }
