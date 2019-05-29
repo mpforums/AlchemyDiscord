@@ -1,5 +1,5 @@
-main: pw.alchemy.BungeeDiscord.BungeeDiscord
-name: BungeeDiscord
+main: pw.alchemy.AlchemyDiscord.AlchemyDiscord
+name: AlchemyDiscord
 version: @VERSION@
 api-version: 1.14
 author: alodi

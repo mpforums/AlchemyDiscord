@@ -1,4 +1,4 @@
-package pw.alchemy.BungeeDiscord;
+package pw.alchemy.AlchemyDiscord;
 
 import com.mashape.unirest.http.Unirest;
 import discord4j.core.DiscordClient;
@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public class BungeeDiscord extends Plugin implements Listener {
+public class AlchemyDiscord extends Plugin implements Listener {
     private String token = "";
     private String channelId = "";
     private String webhook = "";
