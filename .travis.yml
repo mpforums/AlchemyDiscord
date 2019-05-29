@@ -1,1 +1,9 @@
 language: java
+
+deploy:
+  provider: releases
+  api_Key: ${github-release-key}
+  file: "build/libs/*.jar"
+  skip_cleanup: true
+  on:
+    tags: true
