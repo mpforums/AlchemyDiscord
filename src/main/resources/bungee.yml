@@ -1,0 +1,5 @@
+main: BungeeDiscord.BungeeDiscord
+name: BungeeDiscord
+version: @VERSION@
+api-version: 1.14
+author: alodi
