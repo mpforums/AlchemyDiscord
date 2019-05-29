@@ -1,5 +1,6 @@
 *
+!/.gitignore
 !/src/
 !/src/**
 !/*.gradle
-!/.gitignore
+!/.travis.yml
